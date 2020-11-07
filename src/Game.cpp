@@ -67,6 +67,12 @@ bool Game::init()
     (window.getSize().x / 3 - quit_option.getGlobalBounds().width / 2)*2,
     window.getSize().y / 3 - quit_option.getGlobalBounds().height / 2);
 
+  score_text.setString("Score: 0");
+  score_text.setFont(font);
+  score_text.setCharacterSize(20);
+  score_text.setFillColor(sf::Color(255,0,0,255));
+  score_text.setPosition(940,10);
+
   in_menu = true;
 
   return true;
@@ -74,7 +80,30 @@ bool Game::init()
 
 void Game::update(float dt)
 {
+  if (reverse)
+  {
+    walrus.move(-1.0f * speed * dt, 0);
+    walrus.setTextureRect(sf::IntRect(
+      walrus.getLocalBounds().width,
+      0,
+      -walrus.getLocalBounds().width,
+      walrus.getLocalBounds().height));
 
+  }
+  else
+  {
+    walrus.move(1.0f * speed * dt, 0);
+    walrus.setTextureRect(sf::IntRect(
+      0,
+      0,
+      walrus.getLocalBounds().width,
+      walrus.getLocalBounds().height));
+  }
+  if ((walrus.getPosition().x > (window.getSize().x - walrus.getGlobalBounds().width)) ||
+      (walrus.getPosition().x < 0))
+  {
+    reverse = !reverse;
+  }
 }
 
 void Game::render()
@@ -90,6 +119,7 @@ void Game::render()
     window.draw(background);
     window.draw(walrus);
     window.draw(title_text);
+    window.draw(score_text);
   }
 
 
@@ -103,6 +133,12 @@ void Game::mouseClicked(sf::Event event)
   // check if in bounds of bird Sprite
   if (collisionCheck(click, walrus))
   {
+    std::cout << "Collision detected\n";
+    std::string new_score;
+    score++;
+    new_score = "Score: " + std::to_string(score);
+    score_text.setString(new_score);
+    
   }
 }
 
@@ -144,7 +180,19 @@ void Game::keyPressed(sf::Event event)
 
 bool Game::collisionCheck(sf::Vector2i click, sf::Sprite sprite)
 {
-  return false;
+  if (
+    (click.x > sprite.getPosition().x) &&
+    (click.x < (sprite.getPosition().x + sprite.getGlobalBounds().width)) &&
+    (click.y > sprite.getPosition().y) &&
+    (click.y < (sprite.getPosition().y + sprite.getGlobalBounds().height))
+    )
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 void Game::spawn()

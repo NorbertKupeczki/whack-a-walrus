@@ -36,6 +36,7 @@ class Game
   bool reverse = false;
   float speed = 200;
 
+  sf::Text score_text;
   int score = 0;
 
 };
