@@ -22,8 +22,8 @@ class Game
   sf::RenderWindow& window;
   sf::Sprite background;
   sf::Texture background_texture;
-  sf::Sprite bird;
-  sf::Texture bird_texture;
+  sf::Sprite walrus;
+  sf::Texture walrus_texture;
   sf::Font font;
   sf::Text title_text;
 
