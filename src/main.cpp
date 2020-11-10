@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include "Game.h"
 
-
 int main()
 {
   std::cout << "You should see a window that opens as well as this writing to console..."
