@@ -14,14 +14,19 @@ class Game
   void update(float dt);
   void render();
   void mouseClicked(sf::Event event);
+  void mouseReleased(sf::Event event);
   void keyPressed(sf::Event event);
 
  private:
   bool collisionCheck(sf::Vector2i click, sf::Sprite sprite);
-  void spawn();
+  static bool walrusCollision(const sf::Sprite& w1, const sf::Sprite& w2);
+  static bool spawnCheck(const sf::Sprite& obj, int x, int y);
+  void spawn(std::string animal);
 
-  sf::SoundBuffer buffer;
+  sf::SoundBuffer buffer_whack;
+  sf::SoundBuffer buffer_boing;
   sf::Sound whack;
+  sf::Sound boing;
   sf::Music music;
   bool play_music = true;
   float volume = 25.0f;
@@ -29,15 +34,25 @@ class Game
   sf::RenderWindow& window;
   sf::Sprite background;
   sf::Texture background_texture;
+  sf::Sprite menu_bg;
+  sf::Texture menu_bg_texture;
   sf::Texture walrus_texture;
   sf::Font font;
   sf::Text title_text;
+  sf::Sprite waw_main;
+  sf::Texture waw_texture;
+  sf::Sprite cursor;
+  sf::Texture cursor_texture;
+  sf::Sprite play_button;
+  sf::Texture play_texture_on;
+  sf::Texture play_texture_off;
+  sf::Sprite quit_button;
+  sf::Texture quit_texture_on;
+  sf::Texture quit_texture_off;
 
   bool in_menu;
   bool game_over = false;
   sf::Text menu_text;
-  sf::Text play_option;
-  sf::Text quit_option;
   sf::Text game_over_text;
   bool play_selected = true;
 
