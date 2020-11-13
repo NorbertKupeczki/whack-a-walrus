@@ -67,7 +67,7 @@ bool Game::init()
   play_button.setTexture(play_texture_on);
   play_button.setPosition(
     window.getSize().x / 3 - play_button.getGlobalBounds().width / 2,
-    window.getSize().y / 3 - play_button.getGlobalBounds().height / 2);
+    260);
 
   if(!quit_texture_on.loadFromFile("Data/Images/quit_yellow.png"))
   {
@@ -80,7 +80,7 @@ bool Game::init()
   quit_button.setTexture(quit_texture_off);
   quit_button.setPosition(
     window.getSize().x / 1.5 - quit_button.getGlobalBounds().width / 2,
-    window.getSize().y / 3 - quit_button.getGlobalBounds().height / 2);
+    260);
 
   //init music
   if (!music.openFromFile("Data/Sound/bg_music.ogg"))
@@ -115,14 +115,14 @@ bool Game::init()
   window.setMouseCursorVisible(false);
 
   //init text
-  if (!font.loadFromFile("Data/Fonts/OpenSans-Bold.ttf"))
+  if (!font.loadFromFile("Data/Fonts/Forte.ttf"))
   {
     std::cout << "font did not load \n";
   }
 
   title_text.setString("Whack-a-walrus");
   title_text.setFont(font);
-  title_text.setCharacterSize(30);
+  title_text.setCharacterSize(35);
   title_text.setFillColor(sf::Color(255,255,255,200));
   title_text.setPosition(
     window.getSize().x / 2 - title_text.getGlobalBounds().width / 2,
@@ -132,33 +132,36 @@ bool Game::init()
                   "\ncan within 60 seconds, but try not to capture"
                   "\nthe penguin. For each walrus captured, you score"
                   "\n1 point, but for each penguin you lose 5."
-                  "\n\nKey bindings:"
-                  "\n[Q] - Quit game"
-                  "\n[M] - Music On/Off");
+                  "\n\nKeys:"
+                  "\n  [Q] = Quit game"
+                  "\n  [M] = Music On/Off"
+                  "\n  [+] = Increase volume"
+                  "\n  [-] = Reduce volume");
   rules.setFont(font);
-  rules.setCharacterSize(20);
+  rules.setCharacterSize(25);
   rules.setFillColor(sf::Color(0,0,255,225));
   rules.setPosition(
     window.getSize().x / 2 - rules.getGlobalBounds().width / 2,
-    300);
+    350);
 
-  menu_text.setString("Please select an option:");
+  menu_text.setString("Please select an option using the LEFT\n"
+                      "or RIGHT arrow keys, then press ENTER:");
   menu_text.setFont(font);
-  menu_text.setCharacterSize(25);
+  menu_text.setCharacterSize(28);
   menu_text.setFillColor(sf::Color(0,0,255,225));
   menu_text.setPosition(
     window.getSize().x / 2 - menu_text.getGlobalBounds().width / 2,
-    window.getSize().y / 4 - menu_text.getGlobalBounds().height / 2);
+    window.getSize().y / 4 - menu_text.getGlobalBounds().height / 2 +10);
 
   score_text.setString("Score: 0");
   score_text.setFont(font);
-  score_text.setCharacterSize(20);
+  score_text.setCharacterSize(24);
   score_text.setFillColor(sf::Color(255,0,0,255));
   score_text.setPosition(940,10);
 
   clock_text.setString("Clock");
   clock_text.setFont(font);
-  clock_text.setCharacterSize(20);
+  clock_text.setCharacterSize(24);
   clock_text.setFillColor(sf::Color(255,128,0,255));
   clock_text.setPosition(10,10);
 
@@ -178,223 +181,241 @@ bool Game::init()
 void Game::update(float dt)
 {
   cursor.setPosition(static_cast<sf::Vector2f>(sf::Mouse::getPosition(window)));
+  music.setVolume(volume);
 
-  //Walrus 1 movement and directions
-  if (x1_reverse && y1_reverse)
+  //Walrus 1 movement and directions, only runs if it is not captured
+  if (!walrus_1_captured)
   {
-    walrus_1.move(-1.0f * x1_speed * dt, -1.0f * y1_speed * dt);
-    walrus_1.setTextureRect(sf::IntRect(
-      walrus_1.getLocalBounds().width,
-      0,
-      -walrus_1.getLocalBounds().width,
-      walrus_1.getLocalBounds().height));
-  }
-  else if (x1_reverse && !y1_reverse)
-  {
-    walrus_1.move(-1.0f * x1_speed * dt, 1.0f * y1_speed * dt);
-    walrus_1.setTextureRect(sf::IntRect(
-      walrus_1.getLocalBounds().width,
-      0,
-      -walrus_1.getLocalBounds().width,
-      walrus_1.getLocalBounds().height));
-  }
-  else if (!x1_reverse && y1_reverse)
-  {
-    walrus_1.move(1.0f * x1_speed * dt, -1.0f * y1_speed * dt);
-    walrus_1.setTextureRect(sf::IntRect(
-      0,
-      0,
-      walrus_1.getLocalBounds().width,
-      walrus_1.getLocalBounds().height));
-  }
-  else
-  {
-    walrus_1.move(1.0f * x1_speed * dt, 1.0f * y1_speed * dt);
-    walrus_1.setTextureRect(sf::IntRect(
-      0,
-      0,
-      walrus_1.getLocalBounds().width,
-      walrus_1.getLocalBounds().height));
-  }
-
-  if ((walrus_1.getPosition().x > (window.getSize().x - walrus_1.getGlobalBounds().width)) ||
-      (walrus_1.getPosition().x < 0) && !walrus_1_captured)
-  {
-    if (walrus_1.getPosition().x < 0)
+    if (x1_reverse && y1_reverse)
     {
-      walrus_1.move(2,0);
+      walrus_1.move(-1.0f * x1_speed * dt, -1.0f * y1_speed * dt);
+      walrus_1.setTextureRect(sf::IntRect(
+        walrus_1.getLocalBounds().width,
+        0,
+        -walrus_1.getLocalBounds().width,
+        walrus_1.getLocalBounds().height));
+    }
+    else if (x1_reverse && !y1_reverse)
+    {
+      walrus_1.move(-1.0f * x1_speed * dt, 1.0f * y1_speed * dt);
+      walrus_1.setTextureRect(sf::IntRect(
+        walrus_1.getLocalBounds().width,
+        0,
+        -walrus_1.getLocalBounds().width,
+        walrus_1.getLocalBounds().height));
+    }
+    else if (!x1_reverse && y1_reverse)
+    {
+      walrus_1.move(1.0f * x1_speed * dt, -1.0f * y1_speed * dt);
+      walrus_1.setTextureRect(sf::IntRect(
+        0,
+        0,
+        walrus_1.getLocalBounds().width,
+        walrus_1.getLocalBounds().height));
     }
     else
     {
-      walrus_1.move(-2,0);
+      walrus_1.move(1.0f * x1_speed * dt, 1.0f * y1_speed * dt);
+      walrus_1.setTextureRect(sf::IntRect(
+        0,
+        0,
+        walrus_1.getLocalBounds().width,
+        walrus_1.getLocalBounds().height));
     }
-    boing.play();
-    x1_reverse = !x1_reverse;
-    x1_speed = 200 + ((rand() % 21) * 5);
-    y1_speed = 50 + ((rand() % 41) * 5);
+
+    if (
+      (walrus_1.getPosition().x >
+       (window.getSize().x - walrus_1.getGlobalBounds().width)) ||
+      (walrus_1.getPosition().x < 0))
+    {
+      if (walrus_1.getPosition().x < 0)
+      {
+        walrus_1.move(2, 0);
+      }
+      else
+      {
+        walrus_1.move(-2, 0);
+      }
+      boing.play();
+      x1_reverse = !x1_reverse;
+      x1_speed   = 200.0f + ((rand() % 21) * 5.0f);
+      y1_speed   = 50.0f + ((rand() % 41) * 5.0f);
+    }
+
+    if (
+      (walrus_1.getPosition().y >
+       (window.getSize().y - walrus_1.getGlobalBounds().height)) ||
+      (walrus_1.getPosition().y < 0))
+    {
+      if (walrus_1.getPosition().y < 0)
+      {
+        walrus_1.move(0, 2);
+      }
+      else
+      {
+        walrus_1.move(0, -2);
+      }
+      boing.play();
+      y1_reverse = !y1_reverse;
+      x1_speed   = 200.0f + ((rand() % 21) * 5.0f);
+      y1_speed   = 50.0f + ((rand() % 41) * 5.0f);
+    }
   }
 
-  if ((walrus_1.getPosition().y > (window.getSize().y - walrus_1.getGlobalBounds().height)) ||
-      (walrus_1.getPosition().y < 0)  && !walrus_1_captured)
+  //Walrus 2 movement and directions, only runs if it is not captured
+  if (!walrus_2_captured)
   {
-    if (walrus_1.getPosition().y < 0)
+    if (x2_reverse && y2_reverse)
     {
-      walrus_1.move(0,2);
+      walrus_2.move(-1.0f * x2_speed * dt, -1.0f * y2_speed * dt);
+      walrus_2.setTextureRect(sf::IntRect(
+        walrus_2.getLocalBounds().width,
+        0,
+        -walrus_2.getLocalBounds().width,
+        walrus_2.getLocalBounds().height));
+    }
+    else if (x2_reverse && !y2_reverse)
+    {
+      walrus_2.move(-1.0f * x2_speed * dt, 1.0f * y2_speed * dt);
+      walrus_2.setTextureRect(sf::IntRect(
+        walrus_2.getLocalBounds().width,
+        0,
+        -walrus_2.getLocalBounds().width,
+        walrus_2.getLocalBounds().height));
+    }
+    else if (!x2_reverse && y2_reverse)
+    {
+      walrus_2.move(1.0f * x2_speed * dt, -1.0f * y2_speed * dt);
+      walrus_2.setTextureRect(sf::IntRect(
+        0,
+        0,
+        walrus_2.getLocalBounds().width,
+        walrus_2.getLocalBounds().height));
     }
     else
     {
-      walrus_1.move(0,-2);
+      walrus_2.move(1.0f * x2_speed * dt, 1.0f * y2_speed * dt);
+      walrus_2.setTextureRect(sf::IntRect(
+        0,
+        0,
+        walrus_2.getLocalBounds().width,
+        walrus_2.getLocalBounds().height));
     }
-    boing.play();
-    y1_reverse = !y1_reverse;
-    x1_speed = 200 + ((rand() % 21) * 5);
-    y1_speed = 50 + ((rand() % 41) * 5);
-  }
 
-  //Walrus 2 movement and directions
-  if (x2_reverse && y2_reverse)
-  {
-    walrus_2.move(-1.0f * x2_speed * dt, -1.0f * y2_speed * dt);
-    walrus_2.setTextureRect(sf::IntRect(
-      walrus_2.getLocalBounds().width,
-      0,
-      -walrus_2.getLocalBounds().width,
-      walrus_2.getLocalBounds().height));
-  }
-  else if (x2_reverse && !y2_reverse)
-  {
-    walrus_2.move(-1.0f * x2_speed * dt, 1.0f * y2_speed * dt);
-    walrus_2.setTextureRect(sf::IntRect(
-      walrus_2.getLocalBounds().width,
-      0,
-      -walrus_2.getLocalBounds().width,
-      walrus_2.getLocalBounds().height));
-  }
-  else if (!x2_reverse && y2_reverse)
-  {
-    walrus_2.move(1.0f * x2_speed * dt, -1.0f * y2_speed * dt);
-    walrus_2.setTextureRect(sf::IntRect(
-      0,
-      0,
-      walrus_2.getLocalBounds().width,
-      walrus_2.getLocalBounds().height));
-  }
-  else
-  {
-    walrus_2.move(1.0f * x2_speed * dt, 1.0f * y2_speed * dt);
-    walrus_2.setTextureRect(sf::IntRect(
-      0,
-      0,
-      walrus_2.getLocalBounds().width,
-      walrus_2.getLocalBounds().height));
-  }
-
-  if ((walrus_2.getPosition().x > (window.getSize().x - walrus_2.getGlobalBounds().width)) ||
-      (walrus_2.getPosition().x < 0) && !walrus_2_captured)
-  {
-    if (walrus_2.getPosition().x < 0)
+    if (
+      (walrus_2.getPosition().x >
+       (window.getSize().x - walrus_2.getGlobalBounds().width)) ||
+      (walrus_2.getPosition().x < 0))
     {
-      walrus_2.move(2,0);
+      if (walrus_2.getPosition().x < 0)
+      {
+        walrus_2.move(2, 0);
+      }
+      else
+      {
+        walrus_2.move(-2, 0);
+      }
+      boing.play();
+      x2_reverse = !x2_reverse;
+      x2_speed   = 200.0f + ((rand() % 21) * 5.0f);
+      y2_speed   = 50.0f + ((rand() % 41) * 5.0f);
+    }
+
+    if (
+      (walrus_2.getPosition().y >
+       (window.getSize().y - walrus_2.getGlobalBounds().height)) ||
+      (walrus_2.getPosition().y < 0))
+    {
+      if (walrus_2.getPosition().y < 0)
+      {
+        walrus_2.move(0, 2);
+      }
+      else
+      {
+        walrus_2.move(0, -2);
+      }
+      boing.play();
+      y2_reverse = !y2_reverse;
+      x2_speed   = 200.0f + ((rand() % 21) * 5.0f);
+      y2_speed   = 50.0f + ((rand() % 41) * 5.0f);
+    }
+  }
+
+  //Penguin movement and directions, only runs if it is not captured
+  if (!penguin_captured)
+  {
+    if (xp_reverse && yp_reverse)
+    {
+      penguin.move(-1.0f * xp_speed * dt, -1.0f * yp_speed * dt);
+      penguin.setTextureRect(sf::IntRect(
+        penguin.getLocalBounds().width,
+        0,
+        -penguin.getLocalBounds().width,
+        penguin.getLocalBounds().height));
+    }
+    else if (xp_reverse && !yp_reverse)
+    {
+      penguin.move(-1.0f * xp_speed * dt, 1.0f * yp_speed * dt);
+      penguin.setTextureRect(sf::IntRect(
+        penguin.getLocalBounds().width,
+        0,
+        -penguin.getLocalBounds().width,
+        penguin.getLocalBounds().height));
+    }
+    else if (!xp_reverse && yp_reverse)
+    {
+      penguin.move(1.0f * xp_speed * dt, -1.0f * yp_speed * dt);
+      penguin.setTextureRect(sf::IntRect(
+        0, 0, penguin.getLocalBounds().width, penguin.getLocalBounds().height));
     }
     else
     {
-      walrus_2.move(-2,0);
+      penguin.move(1.0f * xp_speed * dt, 1.0f * yp_speed * dt);
+      penguin.setTextureRect(sf::IntRect(
+        0, 0, penguin.getLocalBounds().width, penguin.getLocalBounds().height));
     }
-    boing.play();
-    x2_reverse = !x2_reverse;
-    x2_speed = 200 + ((rand() % 21) * 5);
-    y2_speed = 50 + ((rand() % 41) * 5);
-  }
 
-  if ((walrus_2.getPosition().y > (window.getSize().y - walrus_2.getGlobalBounds().height)) ||
-      (walrus_2.getPosition().y < 0) && !walrus_2_captured)
-  {
-    if (walrus_2.getPosition().y < 0)
-    {
-      walrus_2.move(0,2);
-    }
-    else
-    {
-      walrus_2.move(0,-2);
-    }
-    boing.play();
-    y2_reverse = !y2_reverse;
-    x2_speed = 200 + ((rand() % 21) * 5);
-    y2_speed = 50 + ((rand() % 41) * 5);
-  }
-
-  //Penguin movement and directions
-  if (xp_reverse && yp_reverse)
-  {
-    penguin.move(-1.0f * xp_speed * dt, -1.0f * yp_speed * dt);
-    penguin.setTextureRect(sf::IntRect(
-      penguin.getLocalBounds().width,
-      0,
-      -penguin.getLocalBounds().width,
-      penguin.getLocalBounds().height));
-  }
-  else if (xp_reverse && !yp_reverse)
-  {
-    penguin.move(-1.0f * xp_speed * dt, 1.0f * yp_speed * dt);
-    penguin.setTextureRect(sf::IntRect(
-      penguin.getLocalBounds().width,
-      0,
-      -penguin.getLocalBounds().width,
-      penguin.getLocalBounds().height));
-  }
-  else if (!xp_reverse && yp_reverse)
-  {
-    penguin.move(1.0f * xp_speed * dt, -1.0f * yp_speed * dt);
-    penguin.setTextureRect(sf::IntRect(
-      0,
-      0,
-      penguin.getLocalBounds().width,
-      penguin.getLocalBounds().height));
-  }
-  else
-  {
-    penguin.move(1.0f * xp_speed * dt, 1.0f * yp_speed * dt);
-    penguin.setTextureRect(sf::IntRect(
-      0,
-      0,
-      penguin.getLocalBounds().width,
-      penguin.getLocalBounds().height));
-  }
-
-  if ((penguin.getPosition().x > (window.getSize().x - penguin.getGlobalBounds().width)) ||
+    if (
+      (penguin.getPosition().x >
+       (window.getSize().x - penguin.getGlobalBounds().width)) ||
       (penguin.getPosition().x < 0) && !penguin_captured)
-  {
-    if(penguin.getPosition().x < 0)
     {
-      penguin.move(2,0);
+      if (penguin.getPosition().x < 0)
+      {
+        penguin.move(2, 0);
+      }
+      else
+      {
+        penguin.move(-2, 0);
+      }
+      boing.play();
+      xp_reverse = !xp_reverse;
+      xp_speed   = 200.0f + ((rand() % 21) * 5.0f);
+      yp_speed   = 50.0f + ((rand() % 41) * 5.0f);
     }
-    else
+
+    if (
+      (penguin.getPosition().y >
+       (window.getSize().y - penguin.getGlobalBounds().height)) ||
+      (penguin.getPosition().y < 0) && !penguin_captured)
     {
-      penguin.move(-2,0);
+      if (penguin.getPosition().y < 0)
+      {
+        penguin.move(0, 2);
+      }
+      else
+      {
+        penguin.move(0, -2);
+      }
+      boing.play();
+      yp_reverse = !yp_reverse;
+      xp_speed   = 200.0f + ((rand() % 21) * 5.0f);
+      yp_speed   = 50.0f + ((rand() % 41) * 5.0f);
     }
-    boing.play();
-    xp_reverse = !xp_reverse;
-    xp_speed = 200 + ((rand() % 21) * 5);
-    yp_speed = 50 + ((rand() % 41) * 5);
   }
 
-  if ((penguin.getPosition().y > (window.getSize().y - penguin.getGlobalBounds().height)) ||
-      (penguin.getPosition().y < 0)  && !penguin_captured)
-  {
-    if(penguin.getPosition().y < 0)
-    {
-      penguin.move(0,2);
-    }
-    else
-    {
-      penguin.move(0,-2);
-    }
-    boing.play();
-    yp_reverse = !yp_reverse;
-    xp_speed = 200 + ((rand() % 21) * 5);
-    yp_speed = 50 + ((rand() % 41) * 5);
-  }
-
+  // If walruses collide, bounce them off each other by exchanging
+  // speed and direction values
   if (walrusCollision(walrus_1,walrus_2))
   {
     std::cout << "CLASH OF WALRUSES\n";
@@ -415,46 +436,6 @@ void Game::update(float dt)
     speed_buffer = y1_speed;
     y1_speed = y2_speed;
     y2_speed = speed_buffer;
-  }
-
-  // Countdown
-  if (!in_menu && game_timer >= 0)
-  {
-    game_timer -= dt;
-    int time_in_seconds = game_timer;
-    clock_text.setString("Time remaining: " + std::to_string(time_in_seconds));
-  }
-  else if (!in_menu && game_timer < 0)
-  {
-    clock_text.setString("GAME OVER");
-    game_over = true;
-    game_timer -= dt;
-    score_text.setPosition(
-      window.getSize().x / 2 - score_text.getGlobalBounds().width / 2,
-      window.getSize().y / 2 - score_text.getGlobalBounds().height / 2);
-    score_text.setCharacterSize(50);
-
-    xp_speed, yp_speed, x1_speed, x2_speed, y1_speed, y2_speed = 0;
-    walrus_1.setPosition(300 - walrus_1.getLocalBounds().width / 2, 330);
-    x1_reverse = false;
-    walrus_2.setPosition(780 - walrus_2.getLocalBounds().width / 2, 330);
-    x2_reverse = true;
-    penguin.setPosition(window.getSize().x/2 - penguin.getLocalBounds().width / 2,
-                        450);
-    if (volume > 0)
-    {
-      volume -= 5.0f * dt;
-      if(volume < 0)
-      {
-        volume = 0.0f;
-      }
-      music.setVolume(volume);
-    }
-
-    if (game_timer < -5)
-    {
-      window.close();
-    }
   }
 
   //If any character's state is captured, spawn it after the respawn time
@@ -489,6 +470,46 @@ void Game::update(float dt)
     else
     {
       spawn("penguin");
+    }
+  }
+
+  // Countdown
+  if (!in_menu && game_timer >= 0)
+  {
+    game_timer -= dt;
+    int time_in_seconds = game_timer;
+    clock_text.setString("Time remaining: " + std::to_string(time_in_seconds));
+  }
+  else if (!in_menu && game_timer < 0)
+  {
+    clock_text.setString("GAME OVER");
+    game_over = true;
+    game_timer -= dt;
+    score_text.setPosition(
+      window.getSize().x / 2 - score_text.getGlobalBounds().width / 2,
+      window.getSize().y / 2 - score_text.getGlobalBounds().height / 2);
+    score_text.setCharacterSize(50);
+
+    xp_speed = yp_speed = x1_speed = x2_speed = y1_speed = y2_speed = 0;
+    walrus_1.setPosition(300 - walrus_1.getLocalBounds().width / 2, 330);
+    x1_reverse = false;
+    walrus_2.setPosition(780 - walrus_2.getLocalBounds().width / 2, 330);
+    x2_reverse = true;
+    penguin.setPosition(window.getSize().x/2 - penguin.getLocalBounds().width / 2,
+                        450);
+    if (volume > 0)
+    {
+      volume -= 5.0f * dt;
+      if(volume < 0)
+      {
+        volume = 0.0f;
+      }
+      music.setVolume(volume);
+    }
+
+    if (game_timer < -5)
+    {
+      window.close();
     }
   }
 }
@@ -541,7 +562,7 @@ void Game::mouseClicked(sf::Event event)
     score_text.setString(new_score);
     //Removing penguin from the scene
     penguin.setPosition(-penguin.getLocalBounds().width-10,0);
-    xp_speed,yp_speed = 0;
+    xp_speed = yp_speed = 0;
     penguin_timer = 0.5;
     penguin_captured = true;
   }
@@ -554,7 +575,7 @@ void Game::mouseClicked(sf::Event event)
     score_text.setString(new_score);
     //Removing the walrus from the scene
     walrus_1.setPosition(-walrus_1.getLocalBounds().width-500,0);
-    x1_speed,y1_speed = 0;
+    x1_speed = y1_speed = 0;
     walrus_1_respawn_timer = 0.5;
     walrus_1_captured = true;
   }
@@ -567,7 +588,7 @@ void Game::mouseClicked(sf::Event event)
     score_text.setString(new_score);
     //Removing walrus 2 from the scene
     walrus_2.setPosition(-walrus_2.getLocalBounds().width-500,500);
-    x2_speed,y2_speed = 0;
+    x2_speed = y2_speed = 0;
     walrus_2_respawn_timer = 0.5;
     walrus_2_captured = true;
   }
@@ -629,16 +650,32 @@ void Game::keyPressed(sf::Event event)
     }
     play_music = !play_music;
   }
+  if (event.key.code == sf::Keyboard::Add)
+  {
+    if (volume < 50.0)
+    {
+      volume += 5.0;
+    }
+  }
+  if (event.key.code == sf::Keyboard::Subtract)
+  {
+    if (volume > 0)
+    {
+      volume -= 5.0;
+    }
+  }
 }
 
 bool Game::collisionCheck(sf::Vector2i click, sf::Sprite sprite)
 {
-  if (
-    (click.x-40.0f > sprite.getPosition().x) &&
-    (click.x-40.0f < (sprite.getPosition().x + sprite.getGlobalBounds().width)) &&
-    (click.y-40.0f > sprite.getPosition().y) &&
-    (click.y-40.0f < (sprite.getPosition().y + sprite.getGlobalBounds().height))
-    )
+  float x_dist = click.x-40.0f -
+               (sprite.getPosition().x + sprite.getLocalBounds().width/2);
+  float y_dist = click.y-40.0f -
+               (sprite.getPosition().y + sprite.getLocalBounds().height/2);
+
+  float dist = sqrt(pow(x_dist,2) + pow(y_dist,2));
+
+  if (dist < 65.0f)
   {
     whack.play();
     return true;
@@ -651,9 +688,9 @@ bool Game::collisionCheck(sf::Vector2i click, sf::Sprite sprite)
 
 bool Game::walrusCollision(const sf::Sprite& w1, const sf::Sprite& w2)
 {
-  int x_dist = (w1.getPosition().x + w1.getLocalBounds().width/2) -
+  float x_dist = (w1.getPosition().x + w1.getLocalBounds().width/2) -
                (w2.getPosition().x + w2.getLocalBounds().width/2);
-  int y_dist = (w1.getPosition().y + w1.getLocalBounds().height/2) -
+  float y_dist = (w1.getPosition().y + w1.getLocalBounds().height/2) -
                (w2.getPosition().y + w2.getLocalBounds().height/2);
 
   float dist = sqrt(pow(x_dist,2) + pow(y_dist,2));
@@ -668,10 +705,10 @@ bool Game::walrusCollision(const sf::Sprite& w1, const sf::Sprite& w2)
   }
 }
 
-bool Game::spawnCheck(const sf::Sprite& obj, int x, int y)
+bool Game::spawnCheck(const sf::Sprite& obj, float x, float y)
 {
-  int x_dist = (obj.getPosition().x + obj.getLocalBounds().width/2) - (x+64);
-  int y_dist = (obj.getPosition().y + obj.getLocalBounds().height/2) - (y+69);
+  float x_dist = (obj.getPosition().x + obj.getLocalBounds().width/2) - (x+64.0f);
+  float y_dist = (obj.getPosition().y + obj.getLocalBounds().height/2) - (y+69.0f);
 
   float dist = sqrt(pow(x_dist,2) + pow(y_dist,2));
 
@@ -685,25 +722,25 @@ bool Game::spawnCheck(const sf::Sprite& obj, int x, int y)
   }
 }
 
-void Game::spawn(std::string animal)
+void Game::spawn(const std::string& animal)
 {
   bool illegal_spawn;
-  int new_x_pos;
-  int new_y_pos;
+  float new_x_pos;
+  float new_y_pos;
   //Gives the walrus a random speed and spawn location
   if (animal == "walrus1" && !game_over)
   {
     do
     {
-      new_x_pos = ((rand() % 941) + 10);
-      new_y_pos = ((rand() % 571) + 10);
+      new_x_pos = ((rand() % 941) + 10.0f);
+      new_y_pos = ((rand() % 571) + 10.0f);
       illegal_spawn = spawnCheck(walrus_2,new_x_pos,new_y_pos);
     } while (illegal_spawn);
 
     walrus_1.setPosition(new_x_pos,new_y_pos);
 
-    x1_speed = 200 + ((rand() % 21) * 5);
-    y1_speed = 50 + ((rand() % 41) * 5);
+    x1_speed = 200.0f + ((rand() % 21) * 5.0f);
+    y1_speed = 50.0f + ((rand() % 41) * 5.0f);
 
     //Gives the walrus a random direction
     int direction = rand() % 4;
@@ -744,15 +781,15 @@ void Game::spawn(std::string animal)
   {
     do
     {
-      new_x_pos = ((rand() % 941) + 10);
-      new_y_pos = ((rand() % 571) + 10);
+      new_x_pos = ((rand() % 941) + 10.0f);
+      new_y_pos = ((rand() % 571) + 10.0f);
       illegal_spawn = spawnCheck(walrus_1,new_x_pos,new_y_pos);
     } while (illegal_spawn);
 
     walrus_2.setPosition(new_x_pos,new_y_pos);
 
-    x2_speed = 200 + ((rand() % 21) * 5);
-    y2_speed = 50 + ((rand() % 41) * 5);
+    x2_speed = 200.f + ((rand() % 21) * 5.0f);
+    y2_speed = 50.0f + ((rand() % 41) * 5.0f);
 
     //Gives the walrus a random direction
     int direction = rand() % 4;
@@ -791,12 +828,12 @@ void Game::spawn(std::string animal)
   }
   else if (animal == "penguin" && !game_over)
   {
-    new_x_pos = ((rand() % 941) + 10);
-    new_y_pos = ((rand() % 571) + 10);
+    new_x_pos = ((rand() % 941) + 10.0f);
+    new_y_pos = ((rand() % 571) + 10.0f);
     penguin.setPosition(new_x_pos,new_y_pos);
 
-    xp_speed = 200 + ((rand() % 21) * 5);
-    yp_speed = 50 + ((rand() % 41) * 5);
+    xp_speed = 200.0f + ((rand() % 21) * 5.0f);
+    yp_speed = 50.0f + ((rand() % 41) * 5.0f);
 
     //Gives the walrus a random direction
     int direction = rand() % 4;

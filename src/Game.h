@@ -20,9 +20,10 @@ class Game
  private:
   bool collisionCheck(sf::Vector2i click, sf::Sprite sprite);
   static bool walrusCollision(const sf::Sprite& w1, const sf::Sprite& w2);
-  static bool spawnCheck(const sf::Sprite& obj, int x, int y);
-  void spawn(std::string animal);
+  static bool spawnCheck(const sf::Sprite& obj, float x, float y);
+  void spawn(const std::string& animal);
 
+  // Sounds and Music
   sf::SoundBuffer buffer_whack;
   sf::SoundBuffer buffer_boing;
   sf::Sound whack;
@@ -31,6 +32,7 @@ class Game
   bool play_music = true;
   float volume = 25.0f;
 
+  // Sprites and textures
   sf::RenderWindow& window;
   sf::Sprite background;
   sf::Texture background_texture;
@@ -50,13 +52,15 @@ class Game
   sf::Texture quit_texture_on;
   sf::Texture quit_texture_off;
 
+  // In Menu/Game Over
   bool in_menu;
   bool game_over = false;
   sf::Text menu_text;
   sf::Text game_over_text;
+  sf::Text rules;
   bool play_selected = true;
 
-  //Walrus 1
+  // Walrus 1
   sf::Sprite walrus_1;
   bool x1_reverse = false;
   bool y1_reverse = false;
@@ -65,7 +69,7 @@ class Game
   bool walrus_1_captured = false;
   float walrus_1_respawn_timer = 0.5;
 
-  //Walrus 2
+  // Walrus 2
   sf::Sprite walrus_2;
   bool x2_reverse = true;
   bool y2_reverse = true;
@@ -74,7 +78,7 @@ class Game
   bool walrus_2_captured = false;
   float walrus_2_respawn_timer = 0.5;
 
-  //Penguin
+  // Penguin
   sf::Sprite penguin;
   sf::Texture penguin_texture;
   bool xp_reverse = false;
@@ -84,13 +88,11 @@ class Game
   bool penguin_captured = false;
   float penguin_timer = 0.5;
 
+  // Game UI
   sf::Text score_text;
   int score = 0;
-
   sf::Text clock_text;
   float game_timer = 0;
-
-  sf::Text rules;
 };
 
 #endif // WHACKAMOLESFML_GAME_H
