@@ -1,6 +1,6 @@
 
-#ifndef WHACKAMOLESFML_GAME_H
-#define WHACKAMOLESFML_GAME_H
+#ifndef WHACKAWALRUSSFML_GAME_H
+#define WHACKAWALRUSSFML_GAME_H
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -95,4 +95,4 @@ class Game
   float game_timer = 0;
 };
 
-#endif // WHACKAMOLESFML_GAME_H
+#endif // WHACKAWALRUSSFML_GAME_H

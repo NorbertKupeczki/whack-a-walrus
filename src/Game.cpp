@@ -15,21 +15,20 @@ Game::~Game()
 
 bool Game::init()
 {
-  //init game background texture
+  /* =============== init game and menu background texture =============== */
   if(!background_texture.loadFromFile("Data/Images/game_bg.png"))
   {
     std::cout << "background texture didn't load\n";
   }
   background.setTexture(background_texture);
 
-  //init game background texture
   if(!menu_bg_texture.loadFromFile("Data/Images/menu_bg.png"))
   {
     std::cout << "background texture didn't load\n";
   }
   menu_bg.setTexture(menu_bg_texture);
 
-  //init main title
+  /* =============== init interactive element textures =============== */
   if(!waw_texture.loadFromFile("Data/Images/Whack_a_Walrus.png"))
   {
     std::cout << "background texture didn't load\n";
@@ -92,7 +91,7 @@ bool Game::init()
   music.play();
 
   //init sound
-  if (!buffer_whack.loadFromFile("Data/Sound/whack.wav"))
+  if (!buffer_whack.loadFromFile("Data/Sound/whack.ogg"))
   {
     std::cout << "whack sound didn't load to buffer!\n";
   }
